@@ -3,7 +3,7 @@ import Chat from "./components/chat/Chat";
 import Detail from "./components/detail/Detail";
 import Login from "./components/login/Login";
 import Notification from "./components/notification/Notification";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./lib/firebase";
 import { useUserStore } from "./lib/userStore";
@@ -13,21 +13,26 @@ import { RotatingLines } from "react-loader-spinner";
 function App() {
   const { currentUser, isLoading, fetchUserInfo } = useUserStore();
   const { chatId } = useChatStore();
+  const [initializing, setInitializing] = useState(true); // New state for auth initialization
 
   useEffect(() => {
     const unSub = onAuthStateChanged(auth, (user) => {
       console.log("Auth state changed, UID:", user ? user.uid : null); // Debug log
-      fetchUserInfo(user?.uid);
+      fetchUserInfo(user?.uid).finally(() => {
+        console.log("Auth initialization complete"); // Debug log
+        setInitializing(false); // Mark initialization complete
+      });
     });
+
     return () => {
       console.log("Unsubscribing auth listener"); // Debug log
       unSub();
     };
   }, [fetchUserInfo]);
 
-  console.log("App render - currentUser:", currentUser, "isLoading:", isLoading); // Debug log
+  console.log("App render - currentUser:", currentUser, "isLoading:", isLoading, "initializing:", initializing); // Debug log
 
-  if (isLoading) {
+  if (initializing || isLoading) {
     return (
       <div className="loading">
         Loading...

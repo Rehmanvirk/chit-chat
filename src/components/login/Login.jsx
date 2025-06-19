@@ -23,6 +23,7 @@ const Login = () => {
 
     try {
       const res = await createUserWithEmailAndPassword(auth, email, password);
+      console.log("User registered, UID:", res.user.uid); // Debug log
 
       await setDoc(doc(db, "userchats", res.user.uid), {
         chats: [],
@@ -52,8 +53,8 @@ const Login = () => {
     try {
       const formData = new FormData(e.target);
       const { email, password } = Object.fromEntries(formData);
-      await signInWithEmailAndPassword(auth, email, password);
-      console.log("Login successful"); // Debug log
+      const res = await signInWithEmailAndPassword(auth, email, password);
+      console.log("Login successful, UID:", res.user.uid); // Debug log
     } catch (error) {
       let errorMessage;
       switch (error.code) {
@@ -92,7 +93,7 @@ const Login = () => {
             </button>
           </form>
           <p>
-            Doesnt have an Account?{" "}
+            Doesn't have an Account?{" "}
             <span onClick={() => setShowRegister(true)}>Register</span>
           </p>
         </div>
