@@ -5,12 +5,26 @@ import "./userInfo.css";
 const UserInfo = () => {
   const { currentUser } = useUserStore();
 
+  // Handle avatar fallback more explicitly
+  const getAvatarSrc = () => {
+    // If user has an avatar URL (from external source or base64), use it
+    if (currentUser.avatar) {
+      return currentUser.avatar;
+    }
+    // Otherwise, use local fallback image
+    return "./avatar.png";
+  };
+
   return (
     <div className="userInfo">
       <div className="user">
         <img
-          src={currentUser.avatar ? currentUser.avatar : "./avatar.png"}
+          src={getAvatarSrc()}
           alt="user-image"
+          onError={(e) => {
+            // If avatar fails to load, fallback to local image
+            e.target.src = "./avatar.png";
+          }}
         />
         <div>
           <h2>{currentUser.username}</h2>

@@ -7,7 +7,7 @@ export const useChatStore = create((set) => ({
   chatId: null,
   user: null,
   isCurrentUserBlocked: false,
-  isReceiverBloacked: false,
+  isReceiverBlocked: false, // Fixed typo: was "isReceiverBloacked"
 
   changeChat: (chatId, user) => {
     const currentUser = useUserStore.getState().currentUser;
@@ -18,7 +18,7 @@ export const useChatStore = create((set) => ({
         chatId,
         user: null,
         isCurrentUserBlocked: true,
-        isReceiverBloacked: false,
+        isReceiverBlocked: false, // Fixed typo: was "isReceiverBloacked"
       });
     }
 
@@ -28,7 +28,7 @@ export const useChatStore = create((set) => ({
         chatId,
         user: user,
         isCurrentUserBlocked: false,
-        isReceiverBloacked: true,
+        isReceiverBlocked: true, // Fixed typo: was "isReceiverBloacked"
       });
     } else {
       return set({

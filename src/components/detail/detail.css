@@ -110,3 +110,24 @@
     }
   }
 }
+.media-disabled, .files-disabled {
+  padding: 20px;
+  text-align: center;
+}
+
+.disabled-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  color: #666;
+}
+
+.disabled-message span {
+  font-weight: 500;
+}
+
+.disabled-message p {
+  font-size: 12px;
+  margin: 0;
+}

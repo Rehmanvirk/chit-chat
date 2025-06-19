@@ -8,25 +8,12 @@ import {
 } from "firebase/auth";
 import { auth, db } from "../../lib/firebase";
 import { doc, setDoc } from "firebase/firestore";
-import upload from "../../lib/upload";
+import { useUserStore } from "../../lib/userStore";
 
 const Login = () => {
   const [showRegister, setShowRegister] = useState(false);
-  const [avatar, setAvatar] = useState({
-    file: null,
-    url: "",
-  });
-
   const [loading, setLoading] = useState(false);
-
-  const handleAvatar = (e) => {
-    if (e.target.files[0]) {
-      setAvatar({
-        file: e.target.files[0],
-        url: URL.createObjectURL(e.target.files[0]),
-      });
-    }
-  };
+  const { isLoading: storeLoading } = useUserStore();
 
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -36,7 +23,6 @@ const Login = () => {
 
     try {
       const res = await createUserWithEmailAndPassword(auth, email, password);
-      const imgUrl = await upload(avatar.file);
 
       await setDoc(doc(db, "userchats", res.user.uid), {
         chats: [],
@@ -45,7 +31,7 @@ const Login = () => {
       await setDoc(doc(db, "users", res.user.uid), {
         username,
         email,
-        avatar: imgUrl,
+        avatar: "",
         id: res.user.uid,
         blocked: [],
       });
@@ -53,8 +39,8 @@ const Login = () => {
       toast.success("Account created! You can login now!");
       setShowRegister(false);
     } catch (error) {
-      console.log("Error", error);
-      toast.error(err?.message);
+      console.error("Register error:", error.code, error.message); // Debug log
+      toast.error(error.message);
     } finally {
       setLoading(false);
     }
@@ -67,6 +53,7 @@ const Login = () => {
       const formData = new FormData(e.target);
       const { email, password } = Object.fromEntries(formData);
       await signInWithEmailAndPassword(auth, email, password);
+      console.log("Login successful"); // Debug log
     } catch (error) {
       let errorMessage;
       switch (error.code) {
@@ -82,11 +69,10 @@ const Login = () => {
         case "auth/invalid-credential":
           errorMessage = "Email or Password not matched";
           break;
-        // Add more cases as needed
         default:
           errorMessage = "An error occurred. Please try again.";
       }
-      console.log("Error", error?.code);
+      console.error("Login error:", error.code, error.message); // Debug log
       toast.error(errorMessage);
     } finally {
       setLoading(false);
@@ -99,38 +85,31 @@ const Login = () => {
         <div className="item">
           <h2>Welcome back,</h2>
           <form onSubmit={handleLogin}>
-            <input type="text" placeholder="Email" name="email" />
-            <input type="password" placeholder="Password" name="password" />
-            <button disabled={loading}>
-              {loading ? "Loading" : "Sign In"}
+            <input type="text" placeholder="Email" name="email" disabled={loading || storeLoading} />
+            <input type="password" placeholder="Password" name="password" disabled={loading || storeLoading} />
+            <button disabled={loading || storeLoading}>
+              {loading || storeLoading ? "Loading" : "Sign In"}
             </button>
           </form>
           <p>
-            Doesn't have an Account?{" "}
+            Doesnt have an Account?{" "}
             <span onClick={() => setShowRegister(true)}>Register</span>
           </p>
         </div>
       )}
-      {/* <div className="separator"></div> */}
       {showRegister && (
         <div className="item">
           <h2>Create an Account</h2>
           <form onSubmit={handleRegister}>
-            <label htmlFor="file">
-              <img src={avatar?.url || "./avatar.png"} alt="user" /> Upload an
-              image
-            </label>
-            <input
-              type="file"
-              id="file"
-              style={{ display: "none" }}
-              onChange={handleAvatar}
-            />
-            <input type="text" placeholder="Username" name="username" />
-            <input type="text" placeholder="Email" name="email" />
-            <input type="password" placeholder="Password" name="password" />
-            <button disabled={loading}>
-              {loading ? "Loading" : "Sign Up"}
+            <div className="avatar-placeholder">
+              <img src="./avatar.png" alt="Default Avatar" />
+              <span>Default Avatar</span>
+            </div>
+            <input type="text" placeholder="Username" name="username" disabled={loading || storeLoading} />
+            <input type="text" placeholder="Email" name="email" disabled={loading || storeLoading} />
+            <input type="password" placeholder="Password" name="password" disabled={loading || storeLoading} />
+            <button disabled={loading || storeLoading}>
+              {loading || storeLoading ? "Loading" : "Sign Up"}
             </button>
           </form>
           <p>

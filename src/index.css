@@ -32,7 +32,7 @@ body {
   backdrop-filter: blur(20px) saturate(180%);
   border-radius: 12px;
   display: flex;
-  overflow: hidden;
+  /* overflow: hidden; */
 }
 .loading {
   padding: 50px 100px;

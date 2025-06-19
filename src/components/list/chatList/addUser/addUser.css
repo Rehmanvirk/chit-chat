@@ -57,3 +57,17 @@
     }
   }
 }
+.no-user {
+  padding: 20px;
+  text-align: center;
+  color: #666;
+}
+
+.addUser button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.addUser input:disabled {
+  opacity: 0.6;
+}

@@ -50,6 +50,9 @@
       }
     }
   }
+  .icon-placeholder {
+  cursor: not-allowed;
+}
   .center {
     padding: 20px;
     flex: 1;

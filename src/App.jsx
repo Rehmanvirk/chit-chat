@@ -9,20 +9,25 @@ import { auth } from "./lib/firebase";
 import { useUserStore } from "./lib/userStore";
 import { useChatStore } from "./lib/chatStore";
 import { RotatingLines } from "react-loader-spinner";
+
 function App() {
   const { currentUser, isLoading, fetchUserInfo } = useUserStore();
   const { chatId } = useChatStore();
 
   useEffect(() => {
     const unSub = onAuthStateChanged(auth, (user) => {
+      console.log("Auth state changed, UID:", user ? user.uid : null); // Debug log
       fetchUserInfo(user?.uid);
     });
     return () => {
+      console.log("Unsubscribing auth listener"); // Debug log
       unSub();
     };
   }, [fetchUserInfo]);
 
-  if (isLoading)
+  console.log("App render - currentUser:", currentUser, "isLoading:", isLoading); // Debug log
+
+  if (isLoading) {
     return (
       <div className="loading">
         Loading...
@@ -39,6 +44,8 @@ function App() {
         />
       </div>
     );
+  }
+
   return (
     <div className="container">
       {currentUser ? (
